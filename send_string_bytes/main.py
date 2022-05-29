@@ -4,25 +4,19 @@ from machine import Pin
 
 @rp2.asm_pio(set_init=rp2.PIO.OUT_LOW, out_init=rp2.PIO.OUT_LOW,
              autopull=True, out_shiftdir=rp2.PIO.SHIFT_RIGHT, pull_thresh=8,
-              sideset_init=(rp2.PIO.OUT_LOW, rp2.PIO.OUT_HIGH))
+              sideset_init=(rp2.PIO.OUT_LOW, rp2.PIO.OUT_LOW))
 def write_num():
-    wrap_target()
+    #wrap_target()
+    set(pins, 0) [1]
     pull()
-    out(pins,1) .side(1) [1]  
+    set(x, 8)
+    label("bitloop")
+    out(pins,1) .side(1) [2]  
     out(pins,1) .side(0) [1]  
-
-    out(pins,1) .side(1) [1]  
-    out(pins,1) .side(0) [1]
-    
-    out(pins,1) .side(1) [1]  
-    out(pins,1) .side(0) [1]
-    
-    out(pins,1) .side(1) [1]  
-    out(pins,1) .side(0) [1]
+    jmp(x_dec, "bitloop")
     
     set(pins, 0) [3]
-    #nop() [8]
-    wrap()
+    #wrap()
 
 sm = rp2.StateMachine(0, write_num, freq=20000, set_base=Pin(0), out_base=Pin(0), sideset_base=Pin(15))
 
